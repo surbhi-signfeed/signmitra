@@ -6,8 +6,8 @@ import {
   Logger,
   NotFoundException,
   Req,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+} from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
 import {
   Repository,
   Not,
@@ -17,31 +17,31 @@ import {
   In,
   LessThan,
   MoreThan,
-} from 'typeorm';
-import { RegisterCustomerEntity } from './Entity/CustomerMasterEntity';
-import { RegisterCustomerDto } from './dto/RegisterCustomerDto';
-import { UpdateCustomerDto } from './dto/UpdateCustomerDto';
-import { SearchCustomerDto } from './dto/SearchCustomerDto';
-import { LoyaltyPlanMasterEntity } from 'src/admin/Entity/LoyaltyPlanMasterEntity';
-import { RedeemPointEntity } from './Entity/RedeemPointEntity';
-import { RenewPlanDto } from './dto/RenewPlanDto';
-import nodemailer from 'nodemailer';
-import { RedeemTransactionEntity } from './Entity/RedeemTransactionEntity';
-import { TopUpDataMasterEntity } from './Entity/TopUpRecordMasterEntity';
-import { CompanyTierMasterEntity } from 'src/admin/Entity/CompanyTierMasterEntity';
-import { LoyaltyCardTypeEntity } from 'src/admin/Entity/LoyaltyCardTypeEntity';
-import { LoyaltyCardTopupMasterEntity } from './Entity/LoyaltyTopUpCardMasterEntity';
-import dayjs from 'dayjs';
-import axios from 'axios';
-import { Cron } from '@nestjs/schedule';
-import { CompanyMasterEntity } from 'src/admin/Entity/CompanyMasterEntity';
-import { CompanySmsTemplateEntity } from 'src/admin/Entity/CompanySmsTemplateEntity';
-import { AddBonusPointDto } from './dto/BonusPointDto';
-import { BonusRecordMasterEntity } from './Entity/BonusRecordMatserEntity';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
-import moment from 'moment';
-import { BonusAmountManageMasterEntity } from './Entity/BonusAmountManageMatserEntity';
+} from "typeorm";
+import { RegisterCustomerEntity } from "./Entity/CustomerMasterEntity";
+import { RegisterCustomerDto } from "./dto/RegisterCustomerDto";
+import { UpdateCustomerDto } from "./dto/UpdateCustomerDto";
+import { SearchCustomerDto } from "./dto/SearchCustomerDto";
+import { LoyaltyPlanMasterEntity } from "src/admin/Entity/LoyaltyPlanMasterEntity";
+import { RedeemPointEntity } from "./Entity/RedeemPointEntity";
+import { RenewPlanDto } from "./dto/RenewPlanDto";
+import nodemailer from "nodemailer";
+import { RedeemTransactionEntity } from "./Entity/RedeemTransactionEntity";
+import { TopUpDataMasterEntity } from "./Entity/TopUpRecordMasterEntity";
+import { CompanyTierMasterEntity } from "src/admin/Entity/CompanyTierMasterEntity";
+import { LoyaltyCardTypeEntity } from "src/admin/Entity/LoyaltyCardTypeEntity";
+import { LoyaltyCardTopupMasterEntity } from "./Entity/LoyaltyTopUpCardMasterEntity";
+import dayjs from "dayjs";
+import axios from "axios";
+import { Cron } from "@nestjs/schedule";
+import { CompanyMasterEntity } from "src/admin/Entity/CompanyMasterEntity";
+import { CompanySmsTemplateEntity } from "src/admin/Entity/CompanySmsTemplateEntity";
+import { AddBonusPointDto } from "./dto/BonusPointDto";
+import { BonusRecordMasterEntity } from "./Entity/BonusRecordMatserEntity";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+import moment from "moment";
+import { BonusAmountManageMasterEntity } from "./Entity/BonusAmountManageMatserEntity";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 const otpStore = new Map<
@@ -61,9 +61,9 @@ const otpStore = new Map<
 export class ApiService {
   // private transporter: nodemailer.Transporter;
   private readonly logger = new Logger(ApiService.name);
-  private readonly smsApiUrl = 'https://smsapi.bitss.tech/api/v5/flow';
-  private readonly authKey = '428770ARqQn9tciLvD66c82166P1'; // You may want to store this in ENV
-  private readonly templateId = '683e9f5f8203a1605e06d1a7'; // Register template
+  private readonly smsApiUrl = "https://smsapi.bitss.tech/api/v5/flow";
+  private readonly authKey = "428770ARqQn9tciLvD66c82166P1"; // You may want to store this in ENV
+  private readonly templateId = "683e9f5f8203a1605e06d1a7"; // Register template
   httpService: any;
   constructor(
     @InjectRepository(RegisterCustomerEntity)
@@ -89,7 +89,7 @@ export class ApiService {
     @InjectRepository(BonusRecordMasterEntity)
     private readonly BonusRecordMasterEntityRepository: Repository<BonusRecordMasterEntity>,
     @InjectRepository(BonusAmountManageMasterEntity)
-    private readonly BonusAmountManageMasterEntityRepository: Repository<BonusAmountManageMasterEntity>,
+    private readonly BonusAmountManageMasterEntityRepository: Repository<BonusAmountManageMasterEntity>
   ) {}
 
   async registerCustomer(req: any, registerCustomerDto: RegisterCustomerDto) {
@@ -109,7 +109,7 @@ export class ApiService {
     if (redeemConflict) {
       return {
         message:
-          'Mobile number or card number is already registered in RedeemPoint for this company.',
+          "Mobile number or card number is already registered in RedeemPoint for this company.",
         status: 201,
       };
     }
@@ -126,7 +126,7 @@ export class ApiService {
     if (registerConflict) {
       return {
         message:
-          'Mobile number or card number is already registered in RegisterCustomer for this company.',
+          "Mobile number or card number is already registered in RegisterCustomer for this company.",
         status: 201,
       };
     }
@@ -139,12 +139,12 @@ export class ApiService {
             customerEmail: registerCustomerDto.customerEmail,
             companyId,
           },
-        },
+        }
       );
 
       if (emailConflict) {
         return {
-          message: 'This email is already registered in this company.',
+          message: "This email is already registered in this company.",
           status: 201,
         };
       }
@@ -169,7 +169,7 @@ export class ApiService {
     const savedCustomer =
       await this.RegisterCustomerEntityRepository.save(newCustomer);
 
-    let pointText = '0';
+    let pointText = "0";
 
     if (planId) {
       // Step 2: Plan-based registration
@@ -179,7 +179,7 @@ export class ApiService {
 
       if (!plan) {
         return {
-          message: 'Loyalty plan not found for the provided ID.',
+          message: "Loyalty plan not found for the provided ID.",
           status: 201,
         };
       }
@@ -188,7 +188,7 @@ export class ApiService {
       const validTill = new Date(
         today.getFullYear(),
         today.getMonth() + plan.validMonth,
-        today.getDate(),
+        today.getDate()
       );
 
       const redeem = new RedeemPointEntity();
@@ -210,7 +210,7 @@ export class ApiService {
 
       await this.RedeemPointEntityRepository.save(redeem);
 
-      pointText = redeem.pendingPoint?.toString() || '0';
+      pointText = redeem.pendingPoint?.toString() || "0";
       const company = await this.CompanyMasterEntityRepository.findOne({
         where: { id: companyId },
       });
@@ -220,15 +220,15 @@ export class ApiService {
           await this.sendSmsTemplate(
             mobileNumber,
             companyId,
-            'prepaid-welcome',
+            "prepaid-welcome",
             {
               customer_name: newCustomer.customerName,
-              company_name: company?.companyName || '',
+              company_name: company?.companyName || "",
               total_point: pointText,
-            },
+            }
           );
         } catch (error) {
-          console.error('Failed to send prepaid-welcome SMS:', error.message);
+          console.error("Failed to send prepaid-welcome SMS:", error.message);
         }
       }
 
@@ -244,7 +244,7 @@ export class ApiService {
       loyaltyRecord.companyId = companyId;
       loyaltyRecord.mobileNumber = mobileNumber;
       loyaltyRecord.cardNumber = cardNumber;
-      loyaltyRecord.cardType = 'loyalty';
+      loyaltyRecord.cardType = "loyalty";
       loyaltyRecord.shoppingAmount = 0;
       loyaltyRecord.topupPercent = 0;
       loyaltyRecord.topupValue = 0;
@@ -252,7 +252,7 @@ export class ApiService {
       // loyaltyRecord.validTill = null;
 
       await this.LoyaltyCardTopupMasterEntityRepository.save(loyaltyRecord);
-      pointText = loyaltyRecord.currentAmount.toString() || '0';
+      pointText = loyaltyRecord.currentAmount.toString() || "0";
       const company = await this.CompanyMasterEntityRepository.findOne({
         where: { id: companyId },
       });
@@ -260,21 +260,21 @@ export class ApiService {
         await this.sendSmsTemplate(
           mobileNumber,
           companyId,
-          'register-customer',
+          "register-customer",
           {
             customer_name: newCustomer.customerName,
-            company_name: company?.companyName || '',
-          },
+            company_name: company?.companyName || "",
+          }
         );
       }
     }
 
-    return { message: 'success', status: 200 };
+    return { message: "success", status: 200 };
   }
 
   renderTemplate(
     template: string,
-    variables: Record<string, string | number>,
+    variables: Record<string, string | number>
   ): string {
     let result = template;
     for (const key in variables) {
@@ -287,16 +287,16 @@ export class ApiService {
     mobile: number,
     companyId: number,
     templateKey: string,
-    variables: Record<string, string | number>,
+    variables: Record<string, string | number>
   ): Promise<void> {
     try {
       // Step 1: Get template details
       const smsTemplate = await this.CompanySmsTemplateEntityRepository.findOne(
         {
           where: { companyId, templateKey },
-        },
+        }
       );
-      console.log('smsTemplate: ', smsTemplate);
+      console.log("smsTemplate: ", smsTemplate);
 
       if (!smsTemplate) {
         console.warn(`SMS template not found for key: ${templateKey}`);
@@ -313,43 +313,43 @@ export class ApiService {
           },
         ],
       };
-      console.log('payload: ', payload);
+      console.log("payload: ", payload);
 
       // Step 3: Send request using POST (NOT GET)
       const response = await axios.post(
-        'https://smsapi.bitss.tech/api/v5/flow',
+        "https://smsapi.bitss.tech/api/v5/flow",
         payload,
         {
           headers: {
-            authkey: '428770ARqQn9tciLvD66c82166P1',
-            'Content-Type': 'application/json',
+            authkey: "428770ARqQn9tciLvD66c82166P1",
+            "Content-Type": "application/json",
           },
-        },
+        }
       );
 
       // Step 4: Log success
-      console.log('SMS sent successfully:', response.data);
+      console.log("SMS sent successfully:", response.data);
     } catch (error) {
       console.error(
-        'SMS sending failed:',
-        error.response?.data || error.message,
+        "SMS sending failed:",
+        error.response?.data || error.message
       );
     }
   }
 
   async sendWelcomeEmail(email: string, cardNumber: number): Promise<void> {
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      service: "gmail",
       auth: {
-        user: 'signfeedai@gmail.com',
-        pass: 'vxskzhptpmztfknc',
+        user: "signfeedai@gmail.com",
+        pass: "vxskzhptpmztfknc",
       },
     });
 
     const mailOptions = {
-      from: 'signfeedai@gmail.com',
+      from: "signfeedai@gmail.com",
       to: email,
-      subject: 'Loyalty Card Created',
+      subject: "Loyalty Card Created",
       html: `
     <!DOCTYPE html>
     <html>
@@ -402,21 +402,21 @@ export class ApiService {
 
   async sendOTPEmail(email: string, redeem: RedeemPointEntity): Promise<void> {
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      service: "gmail",
       // auth: {
       //   user: 'surbhigulhana3@gmail.com', // Your email
       //   pass: 'roqt unwq qcnt tlcf', // Your app-specific password
       // },
       auth: {
-        user: 'signfeedai@gmail.com',
-        pass: 'vxskzhptpmztfknc',
+        user: "signfeedai@gmail.com",
+        pass: "vxskzhptpmztfknc",
       },
     });
 
     const mailOptions = {
-      from: 'signfeedai@gmail.com',
+      from: "signfeedai@gmail.com",
       to: email,
-      subject: 'Loyalty Program Confirmation',
+      subject: "Loyalty Program Confirmation",
       html: `
   <!DOCTYPE html>
   <html>
@@ -462,7 +462,7 @@ export class ApiService {
                     </tr>
                     <tr>
                       <td style="font-size: 16px">Plan Expiry Date:</td>
-                      <td align="right" style="font-size: 16px">${new Date(redeem.validTill).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                      <td align="right" style="font-size: 16px">${new Date(redeem.validTill).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</td>
                     </tr>
                   </table>
                 </td>
@@ -479,17 +479,17 @@ export class ApiService {
     await transporter.sendMail(mailOptions);
   }
   async UpdateCustomer(updateCustomerDto: UpdateCustomerDto) {
-    console.log('Received updateCustomerDto:', updateCustomerDto);
+    console.log("Received updateCustomerDto:", updateCustomerDto);
 
     // Step 1: Fetch customer
     const customer = await this.RegisterCustomerEntityRepository.findOne({
       where: { id: updateCustomerDto.customerId },
     });
 
-    console.log('Found customer:', customer);
+    console.log("Found customer:", customer);
 
     if (!customer) {
-      throw new BadRequestException('Customer not found.');
+      throw new BadRequestException("Customer not found.");
     }
 
     // Step 2: Only update allowed fields
@@ -520,13 +520,13 @@ export class ApiService {
       await this.RedeemPointEntityRepository.save(redeemPoints);
     }
 
-    return { message: 'success', status: 200 };
+    return { message: "success", status: 200 };
   }
 
   async updateCustomerCardNumber(
     req: any,
     customerId: number,
-    newCardNumber: number,
+    newCardNumber: number
   ) {
     const companyId = req.user.companyId;
 
@@ -537,7 +537,7 @@ export class ApiService {
 
     if (existing) {
       return {
-        message: 'New card number is already in use.',
+        message: "New card number is already in use.",
         status: 409,
       };
     }
@@ -549,7 +549,7 @@ export class ApiService {
 
     if (!customer) {
       return {
-        message: 'Customer not found.',
+        message: "Customer not found.",
         status: 404,
       };
     }
@@ -565,7 +565,7 @@ export class ApiService {
     if (customer.cardType === 1) {
       await this.RedeemPointEntityRepository.update(
         { cardNumber: oldCardNumber, companyId },
-        { cardNumber: newCardNumber },
+        { cardNumber: newCardNumber }
       );
     }
 
@@ -573,18 +573,18 @@ export class ApiService {
     if (customer.cardType === 2) {
       await this.LoyaltyCardTopupMasterEntityRepository.update(
         { cardNumber: oldCardNumber, companyId },
-        { cardNumber: newCardNumber },
+        { cardNumber: newCardNumber }
       );
     }
 
     // ✅ Step 6: Update RedeemTransactionEntity based on mobile number
     await this.RedeemTransactionEntityRepository.update(
       { mobileNumber, companyId },
-      { cardNumber: newCardNumber },
+      { cardNumber: newCardNumber }
     );
 
     return {
-      message: 'success',
+      message: "success",
       status: 200,
     };
   }
@@ -595,7 +595,7 @@ export class ApiService {
 
     if (!number) {
       throw new BadRequestException(
-        'Please provide a mobile number or card number',
+        "Please provide a mobile number or card number"
       );
     }
 
@@ -607,7 +607,7 @@ export class ApiService {
     });
 
     if (!customer) {
-      throw new NotFoundException('Customer not found');
+      throw new NotFoundException("Customer not found");
     }
 
     let purchasedPlan = null;
@@ -620,12 +620,12 @@ export class ApiService {
           cardNumber: customer.cardNumber,
           companyId,
         },
-        order: { validTill: 'DESC' },
+        order: { validTill: "DESC" },
       });
 
       if (purchasedPlan?.denominationValue) {
         purchasedPlan.denominationValue = parseFloat(
-          purchasedPlan.denominationValue as any,
+          purchasedPlan.denominationValue as any
         );
       }
 
@@ -634,7 +634,7 @@ export class ApiService {
         const planDetails =
           await this.LoyaltyPlanMasterEntityRepository.findOne({
             where: { id: customer.planId },
-            select: ['planName', 'isOneTimeRedeem'],
+            select: ["planName", "isOneTimeRedeem"],
           });
 
         if (planDetails) {
@@ -658,12 +658,12 @@ export class ApiService {
 
       totalLoyaltyPoints = topups.reduce(
         (sum, topup) => sum + Number(topup.currentAmount || 0),
-        0,
+        0
       );
     }
 
     return {
-      message: 'success',
+      message: "success",
       status: 200,
       customer,
       purchasedPlan: purchasedPlan ?? null,
@@ -677,15 +677,15 @@ export class ApiService {
     mobileNumber?: number,
     cardNumber?: number,
     companyId?: number, // coming from req.user
-    planId?: number,
+    planId?: number
   ) {
     if (!mobileNumber && !cardNumber) {
       throw new BadRequestException(
-        'Either mobile number or card number must be provided.',
+        "Either mobile number or card number must be provided."
       );
     }
     if (!companyId) {
-      throw new BadRequestException('Company ID is required.');
+      throw new BadRequestException("Company ID is required.");
     }
     // 1. Fetch customer based on companyId + either mobileNumber or cardNumber
     const customer = await this.RegisterCustomerEntityRepository.findOne({
@@ -695,7 +695,7 @@ export class ApiService {
     });
 
     if (!customer) {
-      throw new NotFoundException('Customer not found for this company.');
+      throw new NotFoundException("Customer not found for this company.");
     }
     // 2. Fetch plan details using customer's planId
     const plan = await this.LoyaltyPlanMasterEntityRepository.findOne({
@@ -703,7 +703,7 @@ export class ApiService {
     });
 
     if (!plan) {
-      throw new NotFoundException('Plan not found for the customer.');
+      throw new NotFoundException("Plan not found for the customer.");
     }
 
     // 3. Check isOneTimeMonth flag
@@ -716,14 +716,14 @@ export class ApiService {
       });
 
       if (!redeemRecord) {
-        throw new BadRequestException('No redeem record found.');
+        throw new BadRequestException("No redeem record found.");
       }
 
       // Update points without any restrictions
       redeemRecord.spendPoint = (redeemRecord.spendPoint || 0) + redeemValue;
       redeemRecord.pendingPoint = Math.max(
         (redeemRecord.pendingPoint || 0) - redeemValue,
-        0,
+        0
       );
 
       // Save updated redeem record
@@ -744,16 +744,16 @@ export class ApiService {
       await this.sendSmsTemplate(
         customer.mobileNumber,
         companyId,
-        'prepaid-thanks',
+        "prepaid-thanks",
         {
           customer_name: customer.customerName,
-          company_name: company?.companyName || '',
+          company_name: company?.companyName || "",
           total_points: redeemRecord.pendingPoint,
-        },
+        }
       );
 
-      console.log('SMS sent.');
-      return { message: 'success', status: 200 };
+      console.log("SMS sent.");
+      return { message: "success", status: 200 };
     }
 
     // 4. Else run your current redemption logic (as you already wrote)
@@ -765,28 +765,28 @@ export class ApiService {
       0,
       23,
       59,
-      59,
+      59
     );
 
     const cardType = customer.cardType;
-    console.log('cardType: ', cardType);
+    console.log("cardType: ", cardType);
 
     // 2. Top-up Card Logic
     if (cardType === 2) {
       let remainingToRedeem = redeemValue || 0;
-      console.log('remainingToRedeem: ', remainingToRedeem);
+      console.log("remainingToRedeem: ", remainingToRedeem);
 
       const topups = await this.LoyaltyCardTopupMasterEntityRepository.find({
-        where: { cardNumber, cardType: 'loyalty' },
-        order: { createdAt: 'ASC' },
+        where: { cardNumber, cardType: "loyalty" },
+        order: { createdAt: "ASC" },
       });
 
       const totalAvailablePoints = topups.reduce(
         (sum, t) => sum + t.currentAmount,
-        0,
+        0
       );
       if (remainingToRedeem > totalAvailablePoints) {
-        throw new BadRequestException('Not enough redeemable points.');
+        throw new BadRequestException("Not enough redeemable points.");
       }
 
       for (const topup of topups) {
@@ -814,7 +814,7 @@ export class ApiService {
             expiryStatus: false,
             remainingAmount: MoreThan(0),
           },
-          order: { bonusDate: 'ASC' }, // FIFO
+          order: { bonusDate: "ASC" }, // FIFO
         });
 
       for (const bonus of bonusTrackers) {
@@ -855,16 +855,16 @@ export class ApiService {
         if (!tier) {
           tier =
             await this.CompanyTierMasterEntityRepository.createQueryBuilder(
-              'tier',
+              "tier"
             )
-              .where('tier.companyId = :companyId', { companyId })
-              .andWhere('tier.toAmount < :value', { value })
-              .orderBy('tier.toAmount', 'DESC')
+              .where("tier.companyId = :companyId", { companyId })
+              .andWhere("tier.toAmount < :value", { value })
+              .orderBy("tier.toAmount", "DESC")
               .getOne();
         }
 
         if (!tier) {
-          throw new BadRequestException('No tier matched for shopping amount.');
+          throw new BadRequestException("No tier matched for shopping amount.");
         }
 
         const topUpValue = (value * tier.topupPercent) / 100;
@@ -877,7 +877,7 @@ export class ApiService {
           companyId,
           mobileNumber: customer.mobileNumber,
           cardNumber,
-          cardType: 'loyalty',
+          cardType: "loyalty",
           shoppingAmount: value,
           discountedShoppingValue: redeemValue ? value - redeemValue : value,
           topupPercent: tier.topupPercent,
@@ -896,41 +896,41 @@ export class ApiService {
 
         const topupsForBalance =
           await this.LoyaltyCardTopupMasterEntityRepository.find({
-            where: { cardNumber, cardType: 'loyalty' },
+            where: { cardNumber, cardType: "loyalty" },
           });
 
         const totalBalance = topupsForBalance.reduce(
           (sum, t) => sum + t.currentAmount,
-          0,
+          0
         );
-        console.log('totalBalance: ', totalBalance);
+        console.log("totalBalance: ", totalBalance);
 
         await this.sendSmsTemplate(
           customer.mobileNumber,
           companyId,
-          'normal-thanks-after-point-redemption',
+          "normal-thanks-after-point-redemption",
           {
             customer_name: customer.customerName,
-            company_name: company?.companyName || '',
+            company_name: company?.companyName || "",
             loyalty_point: totalBalance,
-          },
+          }
         );
 
         return {
-          message: 'success',
+          message: "success",
           status: 200,
           topupValue: savedTopup.topupValue,
         };
       }
 
-      return { message: 'success', status: 200 };
+      return { message: "success", status: 200 };
     }
 
     // 3. Points Card Logic
     else if (cardType === 1) {
       if (!redeemValue || redeemValue <= 0) {
         throw new BadRequestException(
-          'Redeem value is required for this card type.',
+          "Redeem value is required for this card type."
         );
       }
 
@@ -941,7 +941,7 @@ export class ApiService {
       });
 
       if (!redeemRecord) {
-        throw new BadRequestException('No redeem record found.');
+        throw new BadRequestException("No redeem record found.");
       }
 
       // const monthlyRedemptions =
@@ -978,12 +978,12 @@ export class ApiService {
 
       // Sum of redemption done under *same* plan this month
       const samePlanRedemptions = allRedemptionsThisMonth.filter(
-        (tx) => tx.planId === customer.planId,
+        (tx) => tx.planId === customer.planId
       );
 
       const totalRedeemedUnderSamePlan = samePlanRedemptions.reduce(
         (sum, tx) => sum + tx.redeemValue,
-        0,
+        0
       );
 
       // Now check monthly limit only for *same plan*
@@ -992,7 +992,7 @@ export class ApiService {
         redeemRecord.monthlyLimit
       ) {
         throw new BadRequestException(
-          `Monthly limit exceeded under current plan! Already redeemed ${totalRedeemedUnderSamePlan}, limit is ${redeemRecord.monthlyLimit}.`,
+          `Monthly limit exceeded under current plan! Already redeemed ${totalRedeemedUnderSamePlan}, limit is ${redeemRecord.monthlyLimit}.`
         );
       }
 
@@ -1000,7 +1000,7 @@ export class ApiService {
         redeemRecord.redeemPoint - (redeemRecord.spendPoint || 0);
       if (redeemValue > availablePoints) {
         throw new BadRequestException(
-          `Insufficient points. Available: ${availablePoints}.`,
+          `Insufficient points. Available: ${availablePoints}.`
         );
       }
 
@@ -1024,28 +1024,28 @@ export class ApiService {
 
       const smsPayload = {
         customer_name: customer.customerName,
-        company_name: company?.companyName || '',
+        company_name: company?.companyName || "",
         total_points: redeemRecord.pendingPoint,
       };
-      console.log('smsPayload: ', smsPayload);
+      console.log("smsPayload: ", smsPayload);
       await this.sendSmsTemplate(
         customer.mobileNumber,
         companyId,
-        'prepaid-thanks',
+        "prepaid-thanks",
         {
           customer_name: customer.customerName,
-          company_name: company?.companyName || '',
+          company_name: company?.companyName || "",
           total_points: redeemRecord.pendingPoint,
-        },
+        }
       );
 
-      console.log('✅ SMS sent.');
-      return { message: 'Points redeemed successfully.', status: 200 };
+      console.log("✅ SMS sent.");
+      return { message: "Points redeemed successfully.", status: 200 };
     }
 
     // 4. Unknown cardType
     else {
-      throw new BadRequestException('Invalid card type.');
+      throw new BadRequestException("Invalid card type.");
     }
   }
 
@@ -1056,15 +1056,15 @@ export class ApiService {
     mobileNumber?: number,
     cardNumber?: number,
     companyId?: number,
-    userId?: number,
+    userId?: number
   ) {
     if (!mobileNumber && !cardNumber) {
       throw new BadRequestException(
-        'Either mobile number or card number must be provided.',
+        "Either mobile number or card number must be provided."
       );
     }
     if (!companyId) {
-      throw new BadRequestException('Company ID is required.');
+      throw new BadRequestException("Company ID is required.");
     }
     // 1. Fetch customer based on companyId + either mobileNumber or cardNumber
     const customer = await this.RegisterCustomerEntityRepository.findOne({
@@ -1074,7 +1074,7 @@ export class ApiService {
     });
 
     if (!customer) {
-      throw new NotFoundException('Customer not found for this company.');
+      throw new NotFoundException("Customer not found for this company.");
     }
 
     const cardType = customer.cardType;
@@ -1084,16 +1084,16 @@ export class ApiService {
       let remainingToRedeem = redeemValue || 0;
 
       const topups = await this.LoyaltyCardTopupMasterEntityRepository.find({
-        where: { cardNumber, cardType: 'loyalty' },
-        order: { createdAt: 'ASC' },
+        where: { cardNumber, cardType: "loyalty" },
+        order: { createdAt: "ASC" },
       });
 
       const totalAvailablePoints = topups.reduce(
         (sum, t) => sum + t.currentAmount,
-        0,
+        0
       );
       if (remainingToRedeem > totalAvailablePoints) {
-        throw new BadRequestException('Not enough redeemable points.');
+        throw new BadRequestException("Not enough redeemable points.");
       }
 
       for (const topup of topups) {
@@ -1120,16 +1120,16 @@ export class ApiService {
         if (!tier) {
           tier =
             await this.CompanyTierMasterEntityRepository.createQueryBuilder(
-              'tier',
+              "tier"
             )
-              .where('tier.companyId = :companyId', { companyId })
-              .andWhere('tier.toAmount < :value', { value })
-              .orderBy('tier.toAmount', 'DESC')
+              .where("tier.companyId = :companyId", { companyId })
+              .andWhere("tier.toAmount < :value", { value })
+              .orderBy("tier.toAmount", "DESC")
               .getOne();
         }
 
         if (!tier) {
-          throw new BadRequestException('No tier matched for shopping amount.');
+          throw new BadRequestException("No tier matched for shopping amount.");
         }
 
         const topUpValue = (value * tier.topupPercent) / 100;
@@ -1139,16 +1139,16 @@ export class ApiService {
           const now = new Date();
           validTill = new Date(9999, now.getMonth(), now.getDate()); // year=9999, same month/day as today
         } else {
-          validTill = dayjs().add(tier.validity, 'month').toDate();
+          validTill = dayjs().add(tier.validity, "month").toDate();
         }
 
-        console.log('validTill', validTill);
+        console.log("validTill", validTill);
 
         const newTopup = this.LoyaltyCardTopupMasterEntityRepository.create({
           companyId,
           mobileNumber: customer.mobileNumber,
           cardNumber,
-          cardType: 'loyalty',
+          cardType: "loyalty",
           shoppingAmount: value,
           discountedShoppingValue: redeemValue ? value - redeemValue : value,
           topupPercent: tier.topupPercent,
@@ -1180,42 +1180,42 @@ export class ApiService {
 
             const availablePoints = allTopups.reduce(
               (sum, row) => sum + Number(row.currentAmount || 0),
-              0,
+              0
             );
 
             // Send SMS using the loyalty-Thanks template
             await this.sendSmsTemplate(
               customer.mobileNumber,
               companyId,
-              'earn-loyalty-point-without-redeem', // ✅ correct template key
+              "earn-loyalty-point-without-redeem", // ✅ correct template key
               {
-                customer_name: customer?.customerName || '',
-                company_name: company?.companyName || '',
+                customer_name: customer?.customerName || "",
+                company_name: company?.companyName || "",
                 loyalty_points: savedTopup.topupValue.toFixed(2),
                 available_points: availablePoints.toFixed(2),
-              },
+              }
             );
           }
         } catch (error) {
           console.error(
-            'Failed to send earn-loyalty-point-without-redeem SMS:',
-            error.message,
+            "Failed to send earn-loyalty-point-without-redeem SMS:",
+            error.message
           );
         }
 
         return {
-          message: 'success',
+          message: "success",
           status: 200,
           topupValue: savedTopup.topupValue,
         };
       }
 
-      return { message: 'success', status: 200 };
+      return { message: "success", status: 200 };
     }
 
     // 4. Unknown cardType
     else {
-      throw new BadRequestException('Invalid card type.');
+      throw new BadRequestException("Invalid card type.");
     }
   }
 
@@ -1225,16 +1225,16 @@ export class ApiService {
       value: number;
       redeemValue: number;
       cardNumber?: number;
-    },
+    }
   ) {
     if (!mobileNumber) {
-      throw new BadRequestException('Mobile number is required');
+      throw new BadRequestException("Mobile number is required");
     }
 
     const cardNumber = redeemPayload.cardNumber;
     if (!cardNumber) {
       throw new BadRequestException(
-        'Card number is required to check monthly limit',
+        "Card number is required to check monthly limit"
       );
     }
 
@@ -1245,7 +1245,7 @@ export class ApiService {
 
     if (!customer) {
       throw new BadRequestException(
-        'Registered customer not found for this card number',
+        "Registered customer not found for this card number"
       );
     }
 
@@ -1256,10 +1256,10 @@ export class ApiService {
     const plan = await this.LoyaltyPlanMasterEntityRepository.findOne({
       where: { id: customer.planId, companyId: customer.companyId },
     });
-    console.log('plan: ', plan);
+    console.log("plan: ", plan);
 
     const isOneTimeRedeem = plan?.isOneTimeRedeem === 1;
-    console.log('isOneTimeRedeem: ', isOneTimeRedeem);
+    console.log("isOneTimeRedeem: ", isOneTimeRedeem);
 
     // Step 3: If plan is NOT one-time redeem, perform monthly limit validation
     if (!isOneTimeRedeem && cardType === 1) {
@@ -1279,7 +1279,7 @@ export class ApiService {
 
         if (!purchasePlan) {
           throw new BadRequestException(
-            'No purchase plan found for the given card number',
+            "No purchase plan found for the given card number"
           );
         }
 
@@ -1292,7 +1292,7 @@ export class ApiService {
 
         if (!loyaltyPlans || loyaltyPlans.length === 0) {
           throw new BadRequestException(
-            'No loyalty plan records found for the given card number',
+            "No loyalty plan records found for the given card number"
           );
         }
 
@@ -1303,34 +1303,34 @@ export class ApiService {
 
         monthlyLimit = currentMonthPlans.reduce(
           (sum, plan) => sum + Number(plan.currentAmount || 0),
-          0,
+          0
         );
       } else {
-        throw new BadRequestException('Invalid card type');
+        throw new BadRequestException("Invalid card type");
       }
 
       // Step 4: Validate redemption limit
       if (redeemValue < 0) {
-        throw new BadRequestException('Redeem value must not be negative');
+        throw new BadRequestException("Redeem value must not be negative");
       }
 
       const transactions = await this.RedeemTransactionEntityRepository.find({
         where: {
           cardNumber: cardNumber,
           createdAt: Between(startOfMonth, endOfMonth),
-          status: 'dr',
+          status: "dr",
           planId: customer.planId, // <-- key fix
         },
       });
       const totalRedeemed = transactions.reduce(
         (sum, txn) => sum + Number(txn.redeemValue),
-        0,
+        0
       );
 
       if (totalRedeemed + redeemValue > monthlyLimit) {
-        console.log('kl', monthlyLimit, totalRedeemed);
+        console.log("kl", monthlyLimit, totalRedeemed);
         const remainingLimit = Math.max(0, monthlyLimit - totalRedeemed);
-        console.log('remainingLimit: ', remainingLimit);
+        console.log("remainingLimit: ", remainingLimit);
         return {
           message: `You have exceeded your monthly redemption limit. You can redeem only ₹${remainingLimit} this month.`,
           status: 403,
@@ -1359,11 +1359,11 @@ export class ApiService {
       });
       if (!purchasePlan) {
         throw new BadRequestException(
-          'No purchase plan found for computing balance',
+          "No purchase plan found for computing balance"
         );
       }
       currentAmount = Number(purchasePlan.pendingPoint || 0);
-      console.log('currentAmount: ', currentAmount);
+      console.log("currentAmount: ", currentAmount);
     } else {
       // for top‑up cards we sum up all `currentAmount` fields this month (or overall)
       const loyaltyPlans =
@@ -1372,9 +1372,9 @@ export class ApiService {
         });
       currentAmount = loyaltyPlans.reduce(
         (sum, lp) => sum + Number(lp.currentAmount || 0),
-        0,
+        0
       );
-      console.log('currentAmount: ', currentAmount);
+      console.log("currentAmount: ", currentAmount);
     }
     // --- END new balance logic ---
 
@@ -1387,13 +1387,13 @@ export class ApiService {
       // Skip OTP SMS for cardType 2 when redeemValue is 0
       if (cardType === 2 && redeemValue === 0) {
         console.log(
-          'kkk',
+          "kkk",
           redeemPayload.value,
           redeemValue,
           mobileNumber,
           cardNumber,
           customer.companyId,
-          customer.id,
+          customer.id
         );
         return await this.shoppingWithoutOtpShopping(
           redeemPayload.value,
@@ -1401,7 +1401,7 @@ export class ApiService {
           mobileNumber,
           cardNumber,
           customer.companyId,
-          customer.id, // or userId if you pass it
+          customer.id // or userId if you pass it
         );
       }
       // 1. Send OTP to email (optional)
@@ -1411,40 +1411,40 @@ export class ApiService {
       await this.sendSmsTemplate(
         mobileNumber,
         customer.companyId,
-        'otp-point-redeem',
+        "otp-point-redeem",
         {
           customer_name: customer.customerName,
           loyalty_points: redeemPayload.redeemValue,
-          company_name: company?.companyName || '',
+          company_name: company?.companyName || "",
           otp: otp,
           valid_time: 5,
           current_amount: currentAmount,
-        },
+        }
       );
 
-      return { message: 'success', status: 200 };
+      return { message: "success", status: 200 };
     } catch (error) {
-      console.error('Error sending OTP SMS:', error.message);
-      throw new BadRequestException('Error sending OTP');
+      console.error("Error sending OTP SMS:", error.message);
+      throw new BadRequestException("Error sending OTP");
     }
   }
 
   async verifyOtpAndRedeem(mobileNumber: number, otp: string, req: any) {
     const companyId = req.user.companyId;
     const stored = otpStore.get(mobileNumber.toString());
-    console.log('stored: ', stored);
+    console.log("stored: ", stored);
 
     if (!stored) {
-      throw new BadRequestException('No OTP requested or OTP expired.');
+      throw new BadRequestException("No OTP requested or OTP expired.");
     }
 
     if (Date.now() > stored.expiresAt) {
       otpStore.delete(mobileNumber.toString());
-      throw new BadRequestException('OTP has expired.');
+      throw new BadRequestException("OTP has expired.");
     }
 
     if (stored.otp !== otp) {
-      throw new BadRequestException('Invalid OTP.');
+      throw new BadRequestException("Invalid OTP.");
     }
 
     // OTP is valid, delete immediately (one-time use)
@@ -1455,7 +1455,7 @@ export class ApiService {
       stored.redeemPayload.redeemValue,
       stored.redeemPayload.mobileNumber,
       stored.redeemPayload.cardNumber,
-      companyId,
+      companyId
     );
 
     // Step 2: Fetch customer and company details
@@ -1521,16 +1521,16 @@ export class ApiService {
       value: number;
       redeemValue: number;
       cardNumber?: number;
-    },
+    }
   ) {
     if (!mobileNumber) {
-      throw new BadRequestException('Mobile number is required');
+      throw new BadRequestException("Mobile number is required");
     }
 
     const cardNumber = redeemPayload.cardNumber;
     if (!cardNumber) {
       throw new BadRequestException(
-        'Card number is required to check monthly limit',
+        "Card number is required to check monthly limit"
       );
     }
 
@@ -1541,7 +1541,7 @@ export class ApiService {
 
     if (!customer) {
       throw new BadRequestException(
-        'Registered customer not found for this card number',
+        "Registered customer not found for this card number"
       );
     }
 
@@ -1552,10 +1552,10 @@ export class ApiService {
     const plan = await this.LoyaltyPlanMasterEntityRepository.findOne({
       where: { id: customer.planId, companyId: customer.companyId },
     });
-    console.log('plan: ', plan);
+    console.log("plan: ", plan);
 
     const isOneTimeRedeem = plan?.isOneTimeRedeem === 1;
-    console.log('isOneTimeRedeem: ', isOneTimeRedeem);
+    console.log("isOneTimeRedeem: ", isOneTimeRedeem);
 
     // Step 3: If plan is NOT one-time redeem, perform monthly limit validation
     if (!isOneTimeRedeem && cardType === 1) {
@@ -1575,7 +1575,7 @@ export class ApiService {
 
         if (!purchasePlan) {
           throw new BadRequestException(
-            'No purchase plan found for the given card number',
+            "No purchase plan found for the given card number"
           );
         }
 
@@ -1588,7 +1588,7 @@ export class ApiService {
 
         if (!loyaltyPlans || loyaltyPlans.length === 0) {
           throw new BadRequestException(
-            'No loyalty plan records found for the given card number',
+            "No loyalty plan records found for the given card number"
           );
         }
 
@@ -1599,34 +1599,34 @@ export class ApiService {
 
         monthlyLimit = currentMonthPlans.reduce(
           (sum, plan) => sum + Number(plan.currentAmount || 0),
-          0,
+          0
         );
       } else {
-        throw new BadRequestException('Invalid card type');
+        throw new BadRequestException("Invalid card type");
       }
 
       // Step 4: Validate redemption limit
       if (redeemValue < 0) {
-        throw new BadRequestException('Redeem value must not be negative');
+        throw new BadRequestException("Redeem value must not be negative");
       }
 
       const transactions = await this.RedeemTransactionEntityRepository.find({
         where: {
           cardNumber: cardNumber,
           createdAt: Between(startOfMonth, endOfMonth),
-          status: 'dr',
+          status: "dr",
           planId: customer.planId, // <-- key fix
         },
       });
       const totalRedeemed = transactions.reduce(
         (sum, txn) => sum + Number(txn.redeemValue),
-        0,
+        0
       );
 
       if (totalRedeemed + redeemValue > monthlyLimit) {
-        console.log('kl', monthlyLimit, totalRedeemed);
+        console.log("kl", monthlyLimit, totalRedeemed);
         const remainingLimit = Math.max(0, monthlyLimit - totalRedeemed);
-        console.log('remainingLimit: ', remainingLimit);
+        console.log("remainingLimit: ", remainingLimit);
         return {
           message: `You have exceeded your monthly redemption limit. You can redeem only ₹${remainingLimit} this month.`,
           status: 403,
@@ -1655,11 +1655,11 @@ export class ApiService {
       });
       if (!purchasePlan) {
         throw new BadRequestException(
-          'No purchase plan found for computing balance',
+          "No purchase plan found for computing balance"
         );
       }
       currentAmount = Number(purchasePlan.pendingPoint || 0);
-      console.log('currentAmount: ', currentAmount);
+      console.log("currentAmount: ", currentAmount);
     } else {
       // for top‑up cards we sum up all `currentAmount` fields this month (or overall)
       const loyaltyPlans =
@@ -1668,9 +1668,9 @@ export class ApiService {
         });
       currentAmount = loyaltyPlans.reduce(
         (sum, lp) => sum + Number(lp.currentAmount || 0),
-        0,
+        0
       );
-      console.log('currentAmount: ', currentAmount);
+      console.log("currentAmount: ", currentAmount);
     }
     // --- END new balance logic ---
 
@@ -1683,13 +1683,13 @@ export class ApiService {
       // Skip OTP SMS for cardType 2 when redeemValue is 0
       if (cardType === 2 && redeemValue === 0) {
         console.log(
-          'kkk',
+          "kkk",
           redeemPayload.value,
           redeemValue,
           mobileNumber,
           cardNumber,
           customer.companyId,
-          customer.id,
+          customer.id
         );
         return await this.shoppingWithoutOtpShopping(
           redeemPayload.value,
@@ -1697,7 +1697,7 @@ export class ApiService {
           mobileNumber,
           cardNumber,
           customer.companyId,
-          customer.id, // or userId if you pass it
+          customer.id // or userId if you pass it
         );
       }
       // 1. Send OTP to email (optional)
@@ -1707,21 +1707,21 @@ export class ApiService {
       await this.sendSmsTemplate(
         mobileNumber,
         customer.companyId,
-        'otp-point-redeem',
+        "otp-point-redeem",
         {
           customer_name: customer.customerName,
           loyalty_points: redeemPayload.redeemValue,
-          company_name: company?.companyName || '',
+          company_name: company?.companyName || "",
           otp: otp,
           valid_time: 5,
           current_amount: currentAmount,
-        },
+        }
       );
 
-      return { message: 'success', status: 200 };
+      return { message: "success", status: 200 };
     } catch (error) {
-      console.error('Error sending OTP SMS:', error.message);
-      throw new BadRequestException('Error sending OTP');
+      console.error("Error sending OTP SMS:", error.message);
+      throw new BadRequestException("Error sending OTP");
     }
   }
   // =========================================================================
@@ -1731,12 +1731,12 @@ export class ApiService {
     // STEP 1: Fetch existing redeem point record
     const existingRedeem = await this.RedeemPointEntityRepository.findOne({
       where: [{ mobileNumber }, { cardNumber }],
-      order: { validTill: 'DESC' },
+      order: { validTill: "DESC" },
     });
 
     if (!existingRedeem) {
       throw new BadRequestException(
-        'No redeem point record found for this customer.',
+        "No redeem point record found for this customer."
       );
     }
 
@@ -1747,7 +1747,7 @@ export class ApiService {
 
     if (!plan) {
       throw new NotFoundException(
-        'Loyalty plan not found for the provided ID.',
+        "Loyalty plan not found for the provided ID."
       );
     }
 
@@ -1762,7 +1762,7 @@ export class ApiService {
     const validTill = new Date(
       today.getFullYear(),
       today.getMonth() + validMonth,
-      today.getDate(),
+      today.getDate()
     );
 
     // STEP 5: Update RedeemPointEntity with fresh plan details
@@ -1783,7 +1783,7 @@ export class ApiService {
     // STEP 6: Update RegisterUser planId
     await this.RegisterCustomerEntityRepository.update(
       { mobileNumber, cardNumber },
-      { planId: plan.id },
+      { planId: plan.id }
     );
 
     const customer = await this.RegisterCustomerEntityRepository.findOne({
@@ -1794,24 +1794,24 @@ export class ApiService {
       await this.sendRenewalEmail(customer.customerEmail, existingRedeem); // Renewal email
     }
 
-    return { message: 'success', status: 200 };
+    return { message: "success", status: 200 };
   }
   async sendRenewalEmail(
     email: string,
-    redeem: RedeemPointEntity,
+    redeem: RedeemPointEntity
   ): Promise<void> {
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      service: "gmail",
       auth: {
-        user: 'signfeedai@gmail.com',
-        pass: 'vxskzhptpmztfknc',
+        user: "signfeedai@gmail.com",
+        pass: "vxskzhptpmztfknc",
       },
     });
 
     const mailOptions = {
-      from: 'signfeedai@gmail.com',
+      from: "signfeedai@gmail.com",
       to: email,
-      subject: 'Your Loyalty Plan Has Been Renewed 🎉',
+      subject: "Your Loyalty Plan Has Been Renewed 🎉",
       html: `
 <!DOCTYPE html>
 <html>
@@ -1857,7 +1857,7 @@ export class ApiService {
                 </tr>
                 <tr>
                   <td style="font-size: 16px">Plan Valid Till:</td>
-                  <td align="right" style="font-size: 16px">${new Date(redeem.validTill).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                  <td align="right" style="font-size: 16px">${new Date(redeem.validTill).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</td>
                 </tr>
               </table>
             </td>
@@ -1974,7 +1974,7 @@ export class ApiService {
     const { number, bonusPoint, bonusType, expiryDate } = dto;
 
     if (!number || !bonusPoint) {
-      throw new BadRequestException('Number and bonusPoint are required.');
+      throw new BadRequestException("Number and bonusPoint are required.");
     }
 
     // Try mobileNumber first
@@ -1982,9 +1982,9 @@ export class ApiService {
       where: {
         companyId,
         mobileNumber: number,
-        cardType: 'loyalty',
+        cardType: "loyalty",
       },
-      order: { createdAt: 'DESC' },
+      order: { createdAt: "DESC" },
     });
 
     // If not found, try cardNumber
@@ -1993,14 +1993,14 @@ export class ApiService {
         where: {
           companyId,
           cardNumber: number,
-          cardType: 'loyalty',
+          cardType: "loyalty",
         },
-        order: { createdAt: 'DESC' },
+        order: { createdAt: "DESC" },
       });
     }
 
     if (!lastTopup) {
-      throw new NotFoundException('No matching top-up record found.');
+      throw new NotFoundException("No matching top-up record found.");
     }
 
     // Add bonus to currentAmount
@@ -2009,14 +2009,14 @@ export class ApiService {
 
     const expiry = expiryDate
       ? new Date(expiryDate)
-      : moment().add(1, 'year').toDate();
+      : moment().add(1, "year").toDate();
 
     // Save bonus record (optional if still used)
     const bonusRecord = this.BonusRecordMasterEntityRepository.create({
       phoneNumber: lastTopup.mobileNumber,
       cardNumber: lastTopup.cardNumber,
       bonusAmount: bonusPoint,
-      bonusType: bonusType || 'manual',
+      bonusType: bonusType || "manual",
       bonusDate: new Date(),
       expiryStatus: false,
       expiryDate: expiry,
@@ -2030,7 +2030,7 @@ export class ApiService {
       phoneNumber: lastTopup.mobileNumber,
       cardNumber: lastTopup.cardNumber,
       bonusAmount: bonusPoint,
-      bonusType: bonusType || 'manual',
+      bonusType: bonusType || "manual",
       bonusDate: new Date(),
       expiryStatus: false, // Default false
       expiryDate: expiry,
@@ -2046,42 +2046,42 @@ export class ApiService {
       where: { mobileNumber: lastTopup.mobileNumber },
     });
 
-    const customerName = customer?.customerName || 'Customer';
+    const customerName = customer?.customerName || "Customer";
 
     const allTopups = await this.LoyaltyCardTopupMasterEntityRepository.find({
       where: {
         cardNumber: lastTopup.cardNumber,
         companyId,
-        cardType: 'loyalty',
+        cardType: "loyalty",
       },
     });
 
     const totalPoints = allTopups.reduce(
       (sum, record) => sum + Number(record.currentAmount || 0),
-      0,
+      0
     );
 
     // Send SMS using new template
     await this.sendSmsTemplate(
       lastTopup.mobileNumber,
       companyId,
-      'loyalty-bonus-point',
+      "loyalty-bonus-point",
       {
         customer_name: customerName,
         bonus_points: bonusPoint.toFixed(2),
         updated_points: totalPoints.toFixed(2),
-      },
+      }
     );
 
     return {
-      message: 'success',
+      message: "success",
       status: 200,
     };
   }
   // Bonus expiry cron job
-  @Cron('* * * * *')
+  @Cron("1 0 * * *")
   async handleBonusExpiry() {
-    console.log('Cron job started for bonus expiry');
+    console.log("Cron job started for bonus expiry");
     const now = new Date();
 
     // Get all expired bonus records where some remaining is still there
@@ -2094,7 +2094,7 @@ export class ApiService {
         },
       });
 
-    console.log('expiredBonuses: ', expiredBonuses);
+    console.log("expiredBonuses: ", expiredBonuses);
 
     for (const bonus of expiredBonuses) {
       const { remainingAmount, cardNumber, companyId, phoneNumber } = bonus;
@@ -2103,9 +2103,9 @@ export class ApiService {
         where: {
           cardNumber,
           companyId,
-          cardType: 'loyalty',
+          cardType: "loyalty",
         },
-        order: { createdAt: 'DESC' },
+        order: { createdAt: "DESC" },
       });
 
       for (const topup of topups) {
@@ -2123,14 +2123,14 @@ export class ApiService {
       await this.BonusAmountManageMasterEntityRepository.save(bonus);
 
       this.logger.log(
-        `Expired bonus for card ${cardNumber}: ${remainingAmount} points removed.`,
+        `Expired bonus for card ${cardNumber}: ${remainingAmount} points removed.`
       );
     }
   }
   // expired loyalty points cron job
-  @Cron('* * * * *') // Runs every minute
+  @Cron("1 0 * * *") // Runs every minute
   async handleTopupExpiry() {
-    console.log('Cron job started for loyalty top-up expiry');
+    console.log("Cron job started for loyalty top-up expiry");
     const now = new Date();
 
     // Get all expired loyalty top-ups
@@ -2139,11 +2139,11 @@ export class ApiService {
         where: {
           validTill: LessThanOrEqual(now),
           currentAmount: MoreThan(0),
-          cardType: 'loyalty',
+          cardType: "loyalty",
         },
       });
 
-    console.log('Expired top-ups: ', expiredTopups);
+    console.log("Expired top-ups: ", expiredTopups);
 
     for (const topup of expiredTopups) {
       const deduction = Math.min(topup.currentAmount, topup.topupValue); // avoid going negative
@@ -2152,19 +2152,19 @@ export class ApiService {
       await this.LoyaltyCardTopupMasterEntityRepository.save(topup);
 
       this.logger.log(
-        `Expired top-up for card ${topup.cardNumber}: Deducted ${deduction}, Remaining ${topup.currentAmount}`,
+        `Expired top-up for card ${topup.cardNumber}: Deducted ${deduction}, Remaining ${topup.currentAmount}`
       );
     }
   }
 
   // send sms for birthday and aniversary
-  @Cron('0 8 * * *') // Every day at 08:00 AM
+  @Cron("0 8 * * *") // Every day at 08:00 AM
   async handleBirthdayAndAnniversarySMS() {
-    console.log('job called');
+    console.log("job called");
 
     // Get today's date in IST
-    const today = dayjs().tz('Asia/Kolkata');
-    const todayMMDD = today.format('MM-DD');
+    const today = dayjs().tz("Asia/Kolkata");
+    const todayMMDD = today.format("MM-DD");
     console.log(`🕗 Cron Started for date: ${todayMMDD}`);
 
     // Fetch matching customers using raw SQL with timezone conversion
@@ -2175,25 +2175,25 @@ export class ApiService {
       DATE_FORMAT(CONVERT_TZ(birth_date, '+00:00', '+05:30'), '%m-%d') = ? 
       OR DATE_FORMAT(CONVERT_TZ(anniversary_date, '+00:00', '+05:30'), '%m-%d') = ?
     `,
-      [todayMMDD, todayMMDD],
+      [todayMMDD, todayMMDD]
     );
 
-    console.log('🎯 Customers matching today:', customers.length);
+    console.log("🎯 Customers matching today:", customers.length);
 
     for (const customer of customers) {
       const birthDateMMDD = customer.birth_date
-        ? dayjs(customer.birth_date).tz('Asia/Kolkata').format('MM-DD')
+        ? dayjs(customer.birth_date).tz("Asia/Kolkata").format("MM-DD")
         : null;
 
       const anniversaryDateMMDD = customer.anniversary_date
-        ? dayjs(customer.anniversary_date).tz('Asia/Kolkata').format('MM-DD')
+        ? dayjs(customer.anniversary_date).tz("Asia/Kolkata").format("MM-DD")
         : null;
 
       const matchesBirthday = birthDateMMDD === todayMMDD;
       const matchesAnniversary = anniversaryDateMMDD === todayMMDD;
 
       console.log(
-        `${customer.customer_name} → Birthday: ${matchesBirthday}, Anniversary: ${matchesAnniversary}`,
+        `${customer.customer_name} → Birthday: ${matchesBirthday}, Anniversary: ${matchesAnniversary}`
       );
 
       const company = await this.CompanyMasterEntityRepository.findOne({
@@ -2204,11 +2204,11 @@ export class ApiService {
         await this.sendSmsTemplate(
           customer.mobile_number,
           customer.company_id,
-          'happy-birthday-msg',
+          "happy-birthday-msg",
           {
             customer_name: customer.customer_name,
             company_name: company.companyName,
-          },
+          }
         );
         console.log(`🎂 Sent birthday SMS to ${customer.customer_name}`);
       }
@@ -2217,11 +2217,11 @@ export class ApiService {
         await this.sendSmsTemplate(
           customer.mobile_number,
           customer.company_id,
-          'happy-anniversary-msg',
+          "happy-anniversary-msg",
           {
             customer_name: customer.customer_name,
             company_name: company.companyName,
-          },
+          }
         );
         console.log(` Sent anniversary SMS to ${customer.customer_name}`);
       }
